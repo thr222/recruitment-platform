@@ -1,0 +1,86 @@
+spring:
+  application:
+    name: recruitment-platform
+  datasource:
+    url: jdbc:mysql://localhost:3306/recruit_platform?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+
+server:
+  port: 8080
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain,text/css,application/javascript
+    min-response-size: 1024
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+security:
+  jwt:
+    issuer: recruit-platform
+    access-token-expire-seconds: 7200
+    refresh-token-expire-seconds: 604800
+    secret: change-this-secret-to-a-long-random-value-in-production
+
+app:
+  cors:
+    allowed-origins:
+      - http://localhost:5173
+      - http://127.0.0.1:5173
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - PATCH
+      - DELETE
+      - OPTIONS
+    allowed-headers:
+      - '*'
+    exposed-headers:
+      - Authorization
+    allow-credentials: true
+    max-age: 3600
+  idempotency:
+    enabled: true
+    default-interval-seconds: 3
+    header-name: X-Idempotency-Key
+
+storage:
+  local:
+    base-dir: uploads
+    temp-dir: uploads/tmp
+    avatar-dir: uploads/avatar
+    resume-dir: uploads/resume
+    company-license-dir: uploads/company-license
+    max-avatar-size-mb: 2
+    max-resume-size-mb: 10
+    max-company-license-size-mb: 5
+    multipart-chunk-size-mb: 2
+    resume-allowed-extensions:
+      - pdf
+      - doc
+      - docx
+    resume-hash-deduplicate: true
+    async-resume-parse: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha

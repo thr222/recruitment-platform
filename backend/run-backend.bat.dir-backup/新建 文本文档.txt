@@ -1,0 +1,13 @@
+@echo off
+
+REM 设置当前项目使用 JDK17
+set JAVA_HOME=D:\Java\JDK17
+set PATH=%JAVA_HOME%\bin;%PATH%
+
+echo 当前使用的Java版本：
+java -version
+
+echo 启动Spring Boot项目...
+mvn clean spring-boot:run
+
+pause

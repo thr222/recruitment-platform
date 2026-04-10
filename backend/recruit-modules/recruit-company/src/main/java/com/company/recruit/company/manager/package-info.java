@@ -1,0 +1,5 @@
+/**
+ * 聚合编排层，处理跨表与跨模块业务。
+ * 模块职责：企业管理，负责企业入驻、认证资料、企业信息维护与企业成员管理。
+ */
+package com.company.recruit.company.manager;
