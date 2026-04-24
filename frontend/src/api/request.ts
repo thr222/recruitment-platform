@@ -1,4 +1,4 @@
-import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
+import axios, { type AxiosError, type AxiosRequestConfig, type InternalAxiosRequestConfig } from 'axios'
 import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
 import { createIdempotencyKey } from '@/utils/idempotency'
@@ -7,7 +7,9 @@ import type { ApiResponse } from '@/types/common'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
-type RetryableRequestConfig = InternalAxiosRequestConfig & { _retry?: boolean }
+export type AppRequestConfig = AxiosRequestConfig & { silentError?: boolean }
+
+type RetryableRequestConfig = InternalAxiosRequestConfig & { _retry?: boolean; silentError?: boolean }
 
 const request = axios.create({
   baseURL: API_BASE_URL,
@@ -38,7 +40,9 @@ request.interceptors.response.use(
   (response) => {
     const body = response.data as ApiResponse<unknown> | undefined
     if (body && body.success === false) {
-      ElMessage.error(body.message || 'Request failed')
+      if (!(response.config as RetryableRequestConfig).silentError) {
+        ElMessage.error(body.message || 'Request failed')
+      }
       return Promise.reject(body)
     }
     return response
@@ -92,12 +96,14 @@ request.interceptors.response.use(
       }
     }
 
-    if (message) {
-      ElMessage.error(message)
-    } else if (status && status >= 500) {
-      ElMessage.error('Server error, please try again later')
-    } else if (error.message) {
-      ElMessage.error(error.message)
+    if (!originalRequest.silentError) {
+      if (message) {
+        ElMessage.error(message)
+      } else if (status && status >= 500) {
+        ElMessage.error('Server error, please try again later')
+      } else if (error.message) {
+        ElMessage.error(error.message)
+      }
     }
 
     return Promise.reject(error)

@@ -1,4 +1,4 @@
-﻿export interface JobCardItem {
+export interface JobCardItem {
   id: number
   title: string
   companyName: string
@@ -6,6 +6,7 @@
   salary: string
   experience: string
   tags: string[]
+  workMode?: string
 }
 
 export interface JobListItem {
@@ -13,6 +14,7 @@ export interface JobListItem {
   title: string
   companyId?: number
   companyName: string
+  companySize?: string
   workCityCode: string
   salaryMin: number
   salaryMax: number
@@ -30,6 +32,10 @@ export interface JobSearchParams {
   cityCode?: string
   salaryMin?: number
   salaryMax?: number
+  experienceMin?: number
+  experienceMax?: number
+  educationRequirement?: string
+  companySize?: string
   sortBy?: 'latest' | 'salary' | 'hot'
 }
 

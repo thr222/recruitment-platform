@@ -10,6 +10,7 @@ public class PublicJobItemVO {
     String title;
     Long companyId;
     String companyName;
+    String companySize;
     String workCityCode;
     Integer salaryMin;
     Integer salaryMax;

@@ -7,7 +7,11 @@ const menu = [
   { label: '工作台', path: '/candidate/dashboard' },
   { label: '在线简历', path: '/candidate/resume' },
   { label: '我的投递', path: '/candidate/applications' },
-  { label: '消息中心', path: '/candidate/messages' }
+  { label: '面试邀请', path: '/candidate/interviews' },
+  { label: '收藏职位', path: '/candidate/favorites' },
+  { label: '消息通知', path: '/candidate/messages' },
+  { label: '求职偏好', path: '/candidate/preferences' },
+  { label: '个人中心', path: '/candidate/profile' }
 ]
 
 const route = useRoute()

@@ -21,16 +21,34 @@ const routes: RouteRecordRaw[] = [
         meta: { requiredRole: 'recruiter', title: '企业资料', section: 'recruiter' }
       },
       {
+        path: 'certification',
+        name: 'recruiter-certification',
+        component: () => import('@/views/recruiter/CertificationView.vue'),
+        meta: { requiredRole: 'recruiter', title: '企业认证', section: 'recruiter' }
+      },
+      {
         path: 'jobs',
         name: 'recruiter-jobs',
         component: () => import('@/views/recruiter/JobManageView.vue'),
         meta: { requiredRole: 'recruiter', title: '职位管理', section: 'recruiter' }
       },
       {
+        path: 'jobs/:jobId/insights',
+        name: 'recruiter-job-insights',
+        component: () => import('@/views/recruiter/JobInsightView.vue'),
+        meta: { requiredRole: 'recruiter', title: '职位数据', section: 'recruiter', hiddenInMenu: true }
+      },
+      {
         path: 'candidates',
         name: 'recruiter-candidates',
         component: () => import('@/views/recruiter/CandidateManageView.vue'),
         meta: { requiredRole: 'recruiter', title: '候选人管理', section: 'recruiter' }
+      },
+      {
+        path: 'candidates/:candidateId',
+        name: 'recruiter-candidate-detail',
+        component: () => import('@/views/recruiter/CandidateDetailView.vue'),
+        meta: { requiredRole: 'recruiter', title: '候选人详情', section: 'recruiter', hiddenInMenu: true }
       },
       {
         path: 'interviews',

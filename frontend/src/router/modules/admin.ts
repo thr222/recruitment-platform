@@ -49,6 +49,18 @@ const routes: RouteRecordRaw[] = [
         name: 'admin-reports',
         component: () => import('@/views/admin/ReportManageView.vue'),
         meta: { requiredRole: 'admin', title: '举报处理', section: 'admin' }
+      },
+      {
+        path: 'operation-config',
+        name: 'admin-operation-config',
+        component: () => import('@/views/admin/OperationConfigView.vue'),
+        meta: { requiredRole: 'admin', title: '运营配置', section: 'admin' }
+      },
+      {
+        path: 'permissions',
+        name: 'admin-permissions',
+        component: () => import('@/views/admin/PermissionManageView.vue'),
+        meta: { requiredRole: 'admin', title: '权限管理', section: 'admin' }
       }
     ]
   }

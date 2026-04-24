@@ -5,9 +5,13 @@ import { useAuthStore } from '@/stores/auth'
 
 const menu = [
   { label: '运营看板', path: '/admin/dashboard' },
+  { label: '用户管理', path: '/admin/users' },
   { label: '企业审核', path: '/admin/company-audit' },
   { label: '职位审核', path: '/admin/job-audit' },
-  { label: '字典配置', path: '/admin/dict' }
+  { label: '举报处理', path: '/admin/reports' },
+  { label: '运营配置', path: '/admin/operation-config' },
+  { label: '字典配置', path: '/admin/dict' },
+  { label: '权限管理', path: '/admin/permissions' }
 ]
 
 const route = useRoute()

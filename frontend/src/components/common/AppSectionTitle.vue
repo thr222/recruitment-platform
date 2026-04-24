@@ -18,7 +18,7 @@ defineProps<{
 .section-title {
   display: grid;
   gap: 10px;
-  margin-bottom: 18px;
+  margin-bottom: 24px;
 }
 
 h2 {

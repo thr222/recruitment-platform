@@ -6,8 +6,11 @@ import { useAuthStore } from '@/stores/auth'
 const menu = [
   { label: '招聘工作台', path: '/recruiter/dashboard' },
   { label: '企业资料', path: '/recruiter/company' },
+  { label: '企业认证', path: '/recruiter/certification' },
   { label: '职位管理', path: '/recruiter/jobs' },
-  { label: '候选人管理', path: '/recruiter/candidates' }
+  { label: '候选人管理', path: '/recruiter/candidates' },
+  { label: '面试邀请', path: '/recruiter/interviews' },
+  { label: '沟通消息', path: '/recruiter/messages' }
 ]
 
 const route = useRoute()

@@ -15,6 +15,7 @@ public class JobSearchQuery extends PageQuery {
     private Integer salaryMax;
     private Integer experienceMin;
     private Integer experienceMax;
+    private String companySize;
     private String educationRequirement;
     private Long companyId;
     private List<Long> tagIds;

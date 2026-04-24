@@ -1,521 +1,536 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import AppSectionTitle from '@/components/common/AppSectionTitle.vue'
+import { Search, MapLocation, Money, Briefcase, Calendar, ArrowRight } from '@element-plus/icons-vue'
 import { searchJobs } from '@/api/modules/job'
 import type { JobListItem, JobSearchParams } from '@/types/job'
-
-interface FilterForm {
-  keyword: string
-  cityCode: string
-  salaryRange: string
-}
-
-interface OptionItem {
-  label: string
-  value: string
-}
 
 const route = useRoute()
 const router = useRouter()
 
 const loading = ref(false)
-const jobs = ref<JobListItem[]>([])
+const jobList = ref<JobListItem[]>([])
+const total = ref(0)
 const pageNo = ref(1)
 const pageSize = ref(10)
-const total = ref(0)
 
-const filterForm = reactive<FilterForm>({
+const filterForm = reactive({
   keyword: '',
   cityCode: '',
-  salaryRange: ''
+  salaryRange: '',
+  experienceMin: undefined as number | undefined,
+  experienceMax: undefined as number | undefined,
+  sortBy: 'latest'
 })
 
-const cityOptions: OptionItem[] = [
-  { label: '上海', value: '310100' },
+const cityOptions = [
+  { label: '全国', value: '' },
   { label: '北京', value: '110100' },
-  { label: '杭州', value: '330100' },
-  { label: '深圳', value: '440300' }
+  { label: '上海', value: '310100' },
+  { label: '广州', value: '440100' },
+  { label: '深圳', value: '440300' },
+  { label: '杭州', value: '330100' }
 ]
 
-const salaryOptions: OptionItem[] = [
-  { label: '15K - 25K', value: '15-25' },
-  { label: '25K - 35K', value: '25-35' },
-  { label: '35K - 50K', value: '35-50' },
-  { label: '50K 以上', value: '50-999' }
+const salaryOptions = [
+  { label: '不限', value: '' },
+  { label: '3K-5K', value: '3-5' },
+  { label: '5K-10K', value: '5-10' },
+  { label: '10K-20K', value: '10-20' },
+  { label: '20K-50K', value: '20-50' },
+  { label: '50K以上', value: '50-999' }
 ]
 
-const quickTags = ['后端', '前端', '产品经理', '测试开发', '运营']
+const experienceOptions = [
+  { label: '不限', min: undefined, max: undefined },
+  { label: '应届生', min: 0, max: 0 },
+  { label: '1年以内', min: 0, max: 1 },
+  { label: '1-3年', min: 1, max: 3 },
+  { label: '3-5年', min: 3, max: 5 },
+  { label: '5-10年', min: 5, max: 10 },
+  { label: '10年以上', min: 10, max: 99 }
+]
 
-const cityLabelMap = computed<Record<string, string>>(() => {
-  return cityOptions.reduce<Record<string, string>>((acc, item) => {
-    acc[item.value] = item.label
-    return acc
-  }, {})
-})
-
-const resultSummary = computed(() => {
-  if (total.value === 0) {
-    return '当前筛选下暂时没有匹配职位'
-  }
-  return `共找到 ${total.value} 个职位，优先展示最近活跃岗位`
-})
-
-function syncFromRoute() {
-  filterForm.keyword = String(route.query.keyword ?? '')
-  filterForm.cityCode = String(route.query.cityCode ?? '')
-  filterForm.salaryRange = String(route.query.salaryRange ?? '')
-  pageNo.value = Number(route.query.pageNo ?? 1)
-}
-
-function buildParams(): JobSearchParams {
+const fetchJobs = async () => {
+  loading.value = true
   const params: JobSearchParams = {
     pageNo: pageNo.value,
     pageSize: pageSize.value,
     keyword: filterForm.keyword || undefined,
     cityCode: filterForm.cityCode || undefined,
-    sortBy: 'latest'
+    sortBy: filterForm.sortBy as any
   }
 
   if (filterForm.salaryRange) {
-    const [salaryMin, salaryMax] = filterForm.salaryRange.split('-').map(Number)
-    params.salaryMin = salaryMin
-    params.salaryMax = salaryMax
+    const [min, max] = filterForm.salaryRange.split('-').map(Number)
+    params.salaryMin = min * 1000
+    params.salaryMax = max * 1000
   }
 
-  return params
-}
+  params.experienceMin = filterForm.experienceMin
+  params.experienceMax = filterForm.experienceMax
 
-async function fetchJobList() {
-  loading.value = true
   try {
-    const { data } = await searchJobs(buildParams())
-    jobs.value = data.data.records ?? []
-    total.value = data.data.total ?? 0
-    pageNo.value = data.data.pageNo ?? pageNo.value
-    pageSize.value = data.data.pageSize ?? pageSize.value
-  } catch {
-    ElMessage.error('职位列表加载失败，请确认后端接口是否已启动')
-    jobs.value = []
-    total.value = 0
+    const res = await searchJobs(params)
+    if (res.data) {
+      jobList.value = res.data.list || []
+      total.value = res.data.total || 0
+    }
+  } catch (error) {
+    console.error('Failed to fetch jobs:', error)
   } finally {
     loading.value = false
   }
 }
 
-function updateRouteAndFetch() {
-  router.replace({
-    path: '/jobs',
-    query: {
-      ...(filterForm.keyword ? { keyword: filterForm.keyword } : {}),
-      ...(filterForm.cityCode ? { cityCode: filterForm.cityCode } : {}),
-      ...(filterForm.salaryRange ? { salaryRange: filterForm.salaryRange } : {}),
-      ...(pageNo.value > 1 ? { pageNo: String(pageNo.value) } : {})
-    }
-  })
-  fetchJobList()
-}
-
-function handleSearch() {
+const handleSearch = () => {
   pageNo.value = 1
-  updateRouteAndFetch()
+  fetchJobs()
 }
 
-function handleReset() {
-  filterForm.keyword = ''
-  filterForm.cityCode = ''
-  filterForm.salaryRange = ''
-  pageNo.value = 1
-  updateRouteAndFetch()
+const handleExperienceChange = (item: typeof experienceOptions[0]) => {
+  filterForm.experienceMin = item.min
+  filterForm.experienceMax = item.max
+  handleSearch()
 }
 
-function handleCurrentChange(value: number) {
-  pageNo.value = value
-  updateRouteAndFetch()
+const formatSalary = (min: number, max: number) => {
+  return `${Math.floor(min / 1000)}k-${Math.floor(max / 1000)}k`
 }
 
-function handleQuickKeyword(keyword: string) {
-  filterForm.keyword = keyword
-  pageNo.value = 1
-  updateRouteAndFetch()
+const formatTime = (time?: string) => {
+  if (!time) return ''
+  return time.split(' ')[0]
 }
 
-function handleViewDetail(row: JobListItem) {
-  router.push({ name: 'public-job-detail', params: { jobId: row.jobId } })
+const goToDetail = (jobId: number) => {
+  router.push({ name: 'JobDetail', params: { id: jobId } })
 }
-
-function formatCity(cityCode: string) {
-  return cityLabelMap.value[cityCode] ?? cityCode
-}
-
-function formatSalary(row: JobListItem) {
-  return `${row.salaryMin}K-${row.salaryMax}K`
-}
-
-function formatExperience(row: JobListItem) {
-  if (row.experienceMin == null && row.experienceMax == null) {
-    return '经验不限'
-  }
-  if (row.experienceMin != null && row.experienceMax != null) {
-    return `${row.experienceMin}-${row.experienceMax}年`
-  }
-  return `${row.experienceMin ?? row.experienceMax}年+`
-}
-
-watch(
-  () => route.fullPath,
-  () => {
-    syncFromRoute()
-  }
-)
 
 onMounted(() => {
-  syncFromRoute()
-  fetchJobList()
+  if (route.query.keyword) {
+    filterForm.keyword = route.query.keyword as string
+  }
+  fetchJobs()
 })
 </script>
 
 <template>
-  <section class="job-list-page">
-    <section class="hero-banner list-hero">
-      <div>
-        <div class="section-chip">职位搜索</div>
-        <h1>像真实招聘网站那样，把筛选和职位结果放在同一工作流里</h1>
-        <p>这页改成“搜索栏 + 快捷筛选 + 列表卡片”的结构，不再只是中后台表格页。</p>
-      </div>
-    </section>
-
-    <div class="list-grid">
-      <aside class="panel-card filter-sidebar">
-        <AppSectionTitle eyebrow="条件筛选" title="缩小范围更快" description="保留高频条件，把找工作这件事做成一条顺手的路径。" />
-
-        <el-form label-position="top" class="filter-form">
-          <el-form-item label="关键词">
-            <el-input
-              v-model="filterForm.keyword"
-              placeholder="职位、技能、公司"
-              clearable
-              size="large"
-              @keyup.enter="handleSearch"
-            />
-          </el-form-item>
-
-          <el-form-item label="城市">
-            <el-select v-model="filterForm.cityCode" placeholder="请选择城市" clearable size="large">
-              <el-option
-                v-for="item in cityOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-
-          <el-form-item label="薪资范围">
-            <el-select v-model="filterForm.salaryRange" placeholder="请选择薪资" clearable size="large">
-              <el-option
-                v-for="item in salaryOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-
-          <div class="sidebar-actions">
-            <el-button type="primary" size="large" @click="handleSearch">搜索职位</el-button>
-            <el-button size="large" @click="handleReset">重置条件</el-button>
-          </div>
-
-          <div class="quick-tags">
-            <span class="quick-tags__label">热门搜索</span>
-            <button
-              v-for="tag in quickTags"
-              :key="tag"
-              class="quick-tag"
-              @click="handleQuickKeyword(tag)"
-            >
-              {{ tag }}
-            </button>
-          </div>
-        </el-form>
-      </aside>
-
-      <div class="result-column">
-        <div class="panel-card result-summary">
-          <div>
-            <AppSectionTitle
-              eyebrow="搜索结果"
-              title="职位列表"
-              :description="resultSummary"
-            />
-          </div>
-          <div class="result-summary__meta">
-            <span class="text-muted">默认排序：最新发布</span>
-            <span class="link-ghost">支持后续扩展为热度 / 薪资排序</span>
-          </div>
-        </div>
-
-        <div v-loading="loading" class="result-list">
-          <article
-            v-for="job in jobs"
-            :key="job.jobId"
-            class="panel-card list-card"
+  <div class="job-list-container">
+    <!-- Search Bar Section -->
+    <div class="search-section">
+      <div class="content-wrapper">
+        <div class="search-bar">
+          <el-input
+            v-model="filterForm.keyword"
+            placeholder="搜索职位、公司或关键词"
+            class="search-input"
+            @keyup.enter="handleSearch"
           >
-            <div class="list-card__top">
-              <div>
-                <div class="list-card__title-row">
-                  <h3>{{ job.title }}</h3>
-                  <span class="status-pill">
-                    <i class="status-dot" />
-                    {{ job.status || 'ONLINE' }}
-                  </span>
-                </div>
-
-                <div class="list-card__meta">
-                  <span>{{ job.companyName }}</span>
-                  <span>{{ formatCity(job.workCityCode) }}</span>
-                  <span>{{ formatExperience(job) }}</span>
-                  <span>{{ job.educationRequirement || '学历不限' }}</span>
-                </div>
-              </div>
-
-              <div class="list-card__salary">{{ formatSalary(job) }}</div>
-            </div>
-
-            <div class="list-card__bottom">
-              <div class="list-card__tags">
-                <span class="tag-item">在线沟通</span>
-                <span class="tag-item">反馈快</span>
-                <span class="tag-item">{{ job.educationRequirement || '经验可谈' }}</span>
-              </div>
-              <div class="list-card__action">
-                <span class="text-muted">{{ job.publishedAt || '刚刚更新' }}</span>
-                <el-button type="primary" round @click="handleViewDetail(job)">查看详情</el-button>
-              </div>
-            </div>
-          </article>
-
-          <div v-if="!loading && jobs.length === 0" class="panel-card empty-card">
-            <h3>没有找到匹配的职位</h3>
-            <p>可以先试试放宽城市或薪资条件，再重新搜索。</p>
-          </div>
-        </div>
-
-        <div class="panel-card pagination-panel">
-          <el-pagination
-            v-model:current-page="pageNo"
-            v-model:page-size="pageSize"
-            background
-            layout="total, prev, pager, next, jumper"
-            :total="total"
-            @current-change="handleCurrentChange"
-          />
+            <template #prefix>
+              <el-icon><Search /></el-icon>
+            </template>
+          </el-input>
+          <el-select v-model="filterForm.cityCode" placeholder="城市" class="city-select" @change="handleSearch">
+            <el-option v-for="item in cityOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+          <el-button type="primary" class="search-btn" @click="handleSearch">搜索</el-button>
         </div>
       </div>
     </div>
-  </section>
+
+    <div class="content-wrapper main-content">
+      <!-- Filters Row -->
+      <div class="filter-row card-panel">
+        <div class="filter-group">
+          <span class="filter-label">薪资范围：</span>
+          <el-radio-group v-model="filterForm.salaryRange" size="small" @change="handleSearch">
+            <el-radio-button v-for="opt in salaryOptions" :key="opt.value" :label="opt.value">
+              {{ opt.label }}
+            </el-radio-button>
+          </el-radio-group>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">工作经验：</span>
+          <div class="exp-tags">
+            <span
+              v-for="opt in experienceOptions"
+              :key="opt.label"
+              class="filter-tag"
+              :class="{ active: filterForm.experienceMin === opt.min && filterForm.experienceMax === opt.max }"
+              @click="handleExperienceChange(opt)"
+            >
+              {{ opt.label }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Grid -->
+      <el-row :gutter="20" class="list-container">
+        <!-- List Column -->
+        <el-col :md="17" :sm="24">
+          <div class="sort-bar">
+            <span class="total-count">找到 {{ total }} 个相关职位</span>
+            <el-radio-group v-model="filterForm.sortBy" size="small" @change="handleSearch">
+              <el-radio-button label="latest">最新</el-radio-button>
+              <el-radio-button label="hot">热门</el-radio-button>
+            </el-radio-group>
+          </div>
+
+          <div v-loading="loading" class="jobs-stack">
+            <div v-for="job in jobList" :key="job.jobId" class="job-item-card" @click="goToDetail(job.jobId)">
+              <div class="job-main-info">
+                <div class="job-header">
+                  <h3 class="job-title">{{ job.title }}</h3>
+                  <span class="job-salary">{{ formatSalary(job.salaryMin, job.salaryMax) }}</span>
+                </div>
+                <div class="job-labels">
+                  <span class="label-item"><el-icon><MapLocation /></el-icon> {{ job.workCityCode === '310100' ? '上海' : '其他' }}</span>
+                  <span class="label-item"><el-icon><Briefcase /></el-icon> {{ job.experienceMin || 0 }}-{{ job.experienceMax || 1 }}年</span>
+                  <span class="label-item"><el-icon><Calendar /></el-icon> {{ job.educationRequirement || '本科' }}</span>
+                </div>
+                <div class="job-tags">
+                  <el-tag v-for="tag in ['双休', '五险一金', '带薪年假']" :key="tag" size="small" effect="plain" class="tag-pill">
+                    {{ tag }}
+                  </el-tag>
+                </div>
+              </div>
+              <div class="job-company-info">
+                <div class="company-text">
+                  <div class="company-name">{{ job.companyName }}</div>
+                  <div class="company-meta">{{ job.companySize || '100-499人' }} · 互联网</div>
+                </div>
+                <el-avatar :size="48" shape="square" class="company-logo">
+                  {{ job.companyName.charAt(0) }}
+                </el-avatar>
+              </div>
+            </div>
+
+            <el-empty v-if="jobList.length === 0 && !loading" description="暂无符合条件的职位" />
+
+            <div class="pagination-wrapper">
+              <el-pagination
+                v-model:current-page="pageNo"
+                v-model:page-size="pageSize"
+                :total="total"
+                layout="prev, pager, next"
+                background
+                @current-change="fetchJobs"
+              />
+            </div>
+          </div>
+        </el-col>
+
+        <!-- Sidebar Column -->
+        <el-col :md="7" class="hidden-sm-and-down">
+          <div class="sidebar-card">
+            <h4>可能感兴趣的公司</h4>
+            <div class="interest-companies">
+              <div v-for="i in 3" :key="i" class="mini-company-card">
+                <el-avatar :size="32" shape="square">企</el-avatar>
+                <div class="mini-info">
+                  <div class="name">热门名企 {{ i }}</div>
+                  <div class="desc">互联网 · 已上市</div>
+                </div>
+              </div>
+            </div>
+            <el-divider />
+            <div class="app-ad">
+              <p>下载 APP 随时随地看职位</p>
+              <div class="qr-placeholder">二维码</div>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-.job-list-page {
-  display: grid;
-  gap: 24px;
+.job-list-container {
+  background-color: #f6f9fc;
+  min-height: 100vh;
 }
 
-.list-hero {
-  padding: 34px 36px;
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
-.list-grid {
-  display: grid;
-  grid-template-columns: 300px minmax(0, 1fr);
-  gap: 20px;
-}
-
-.filter-sidebar {
-  align-self: start;
+/* Search Section */
+.search-section {
+  background-color: white;
+  padding: 24px 0;
+  border-bottom: 1px solid #eef2f6;
   position: sticky;
-  top: 98px;
-  padding: 22px;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
 }
 
-.filter-form {
-  margin-top: 10px;
-}
-
-.sidebar-actions {
-  display: grid;
-  gap: 10px;
-}
-
-.quick-tags {
+.search-bar {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 18px;
+  gap: 12px;
 }
 
-.quick-tags__label {
-  width: 100%;
-  color: var(--brand-ink-soft);
-  font-size: 13px;
-  font-weight: 700;
+.search-input {
+  flex: 1;
 }
 
-.quick-tag {
+.search-input :deep(.el-input__wrapper) {
+  height: 48px;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  box-shadow: none !important;
+  border: 1px solid #e2e8f0;
+}
+
+.city-select :deep(.el-input__wrapper) {
+  height: 48px;
+  width: 120px;
+  border-radius: 8px;
+}
+
+.search-btn {
+  height: 48px;
+  padding: 0 32px;
+  border-radius: 8px;
+  font-weight: 600;
+  background-color: var(--brand-primary);
   border: none;
-  background: rgba(0, 166, 166, 0.08);
-  color: var(--brand-primary-deep);
-  padding: 8px 12px;
-  border-radius: 999px;
-  cursor: pointer;
 }
 
-.result-column {
-  display: grid;
-  gap: 16px;
+/* Main Content */
+.main-content {
+  padding-top: 24px;
+  padding-bottom: 60px;
 }
 
-.result-summary {
+.card-panel {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+  border: 1px solid #eef2f6;
+}
+
+.filter-group {
   display: flex;
-  justify-content: space-between;
-  gap: 18px;
-  align-items: end;
-  padding: 22px 24px;
-}
-
-.result-summary__meta {
-  display: grid;
-  gap: 8px;
-  text-align: right;
-}
-
-.result-list {
-  display: grid;
-  gap: 16px;
-}
-
-.list-card {
-  padding: 22px 24px;
-}
-
-.list-card__top {
-  display: flex;
-  justify-content: space-between;
-  gap: 18px;
-  align-items: flex-start;
-}
-
-.list-card__title-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
   align-items: center;
+  margin-bottom: 16px;
 }
 
-.list-card__title-row h3 {
-  margin: 0;
-  color: var(--brand-title);
-  font-size: 24px;
-  line-height: 1.3;
+.filter-group:last-child {
+  margin-bottom: 0;
 }
 
-.list-card__meta {
+.filter-label {
+  font-size: 14px;
+  color: #64748b;
+  width: 80px;
+  flex-shrink: 0;
+}
+
+.exp-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 12px;
-  color: var(--brand-ink-soft);
+}
+
+.filter-tag {
   font-size: 14px;
+  color: #475569;
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: 6px;
+  transition: all 0.2s;
 }
 
-.list-card__salary {
-  flex-shrink: 0;
-  color: var(--brand-accent);
-  font-size: 28px;
-  font-weight: 800;
+.filter-tag:hover {
+  color: var(--brand-primary);
+  background-color: rgba(31, 107, 87, 0.05);
 }
 
-.status-pill {
-  display: inline-flex;
+.filter-tag.active {
+  color: white;
+  background-color: var(--brand-primary);
+}
+
+/* Sort Bar */
+.sort-bar {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
+  margin-bottom: 16px;
+}
+
+.total-count {
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* Job Cards */
+.jobs-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.job-item-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid #eef2f6;
+}
+
+.job-item-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border-color: var(--brand-primary);
+  transform: translateY(-2px);
+}
+
+.job-main-info {
+  flex: 1;
+}
+
+.job-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.job-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.job-salary {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f59e0b;
+}
+
+.job-labels {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.label-item {
+  font-size: 14px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.job-tags {
+  display: flex;
   gap: 8px;
-  padding: 7px 12px;
-  border-radius: 999px;
-  background: rgba(25, 180, 91, 0.1);
-  color: #148d48;
-  font-size: 12px;
+}
+
+.tag-pill {
+  border: none;
+  background-color: #f1f5f9;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.job-company-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-left: 24px;
+  border-left: 1px solid #f1f5f9;
+  width: 240px;
+}
+
+.company-text {
+  flex: 1;
+  text-align: right;
+}
+
+.company-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 4px;
+}
+
+.company-meta {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.company-logo {
+  background-color: var(--brand-primary);
+  color: white;
   font-weight: 700;
 }
 
-.list-card__bottom {
+/* Pagination */
+.pagination-wrapper {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+/* Sidebar */
+.sidebar-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #eef2f6;
+}
+
+.sidebar-card h4 {
+  margin: 0 0 16px 0;
+  color: #1e293b;
+  font-size: 16px;
+}
+
+.interest-companies {
+  display: flex;
+  flex-direction: column;
   gap: 16px;
-  align-items: center;
-  margin-top: 18px;
-  padding-top: 18px;
-  border-top: 1px solid var(--brand-line);
 }
 
-.list-card__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.tag-item {
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(15, 46, 77, 0.06);
-  color: var(--brand-ink);
-  font-size: 13px;
-}
-
-.list-card__action {
+.mini-company-card {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
-.empty-card,
-.pagination-panel {
-  padding: 24px;
+.mini-info .name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
 }
 
-.empty-card h3 {
-  margin: 0;
-  color: var(--brand-title);
+.mini-info .desc {
+  font-size: 12px;
+  color: #94a3b8;
 }
 
-.empty-card p {
-  margin: 10px 0 0;
-  color: var(--brand-ink-soft);
-}
-
-@media (max-width: 1100px) {
-  .list-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .filter-sidebar {
-    position: static;
-  }
-}
-
-@media (max-width: 760px) {
-  .result-summary,
-  .list-card__top,
-  .list-card__bottom,
-  .list-card__action {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .list-card__salary {
-    font-size: 24px;
-  }
+.qr-placeholder {
+  width: 120px;
+  height: 120px;
+  background-color: #f1f5f9;
+  margin: 16px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 12px;
+  border-radius: 8px;
 }
 </style>

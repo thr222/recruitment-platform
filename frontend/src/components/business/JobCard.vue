@@ -1,124 +1,143 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { JobCardItem } from '@/types/job'
 
-defineProps<{ job: JobCardItem }>()
+const props = withDefaults(
+  defineProps<{
+    job: JobCardItem
+    compact?: boolean
+  }>(),
+  {
+    compact: false
+  }
+)
+
+const companyLogo = computed(() => props.job.companyName.trim().slice(0, 1).toUpperCase())
+const skillTags = computed(() => props.job.tags.slice(0, props.compact ? 2 : 3))
 </script>
 
 <template>
-  <article class="job-card panel-card">
-    <div class="job-card__head">
-      <div class="job-card__main">
-        <div class="job-card__title-row">
-          <h3>{{ job.title }}</h3>
-          <span class="status-pill">
-            <i class="status-dot" />
-            急招
-          </span>
-        </div>
-        <div class="job-card__meta">
-          <span>{{ job.companyName }}</span>
-          <span>{{ job.city }}</span>
-          <span>{{ job.experience }}</span>
-        </div>
-      </div>
-      <div class="job-card__salary">{{ job.salary }}</div>
+  <article class="job-card">
+    <div class="job-card__company">
+      <span class="job-card__logo" aria-hidden="true">{{ companyLogo }}</span>
+      <span class="job-card__company-name">{{ job.companyName }}</span>
     </div>
 
+    <h3 class="job-card__title">{{ job.title }}</h3>
+
     <div class="job-card__tags">
-      <span v-for="tag in job.tags" :key="tag" class="tag-item">{{ tag }}</span>
+      <span class="tag-chip tag-chip--salary">{{ job.salary }}</span>
+      <span v-for="tag in skillTags" :key="tag" class="tag-chip tag-chip--skill">{{ tag }}</span>
+      <span v-if="job.workMode" class="tag-chip tag-chip--mode">{{ job.workMode }}</span>
+    </div>
+
+    <div class="job-card__meta">
+      <span>{{ job.city }}</span>
+      <span>{{ job.experience }}</span>
     </div>
   </article>
 </template>
 
 <style scoped>
 .job-card {
-  padding: 22px 24px;
-  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+  border: 1px solid var(--brand-line);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .job-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(0, 166, 166, 0.24);
-  box-shadow: 0 22px 70px rgba(17, 72, 106, 0.14);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
 }
 
-.job-card__head {
+.job-card__company {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 18px;
-}
-
-.job-card__main {
-  min-width: 0;
-}
-
-.job-card__title-row {
-  display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: 10px;
 }
 
-h3 {
-  margin: 0;
+.job-card__logo {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #f3f4f6;
   color: var(--brand-title);
-  font-size: 22px;
-  line-height: 1.3;
+  font-size: 15px;
+  font-weight: 800;
 }
 
-.job-card__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 12px;
+.job-card__company-name {
   color: var(--brand-ink-soft);
   font-size: 14px;
+  font-weight: 600;
 }
 
-.job-card__salary {
-  flex-shrink: 0;
-  color: var(--brand-accent);
-  font-size: 24px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
-
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 12px;
-  border-radius: 999px;
-  background: rgba(25, 180, 91, 0.12);
-  color: #148d48;
-  font-size: 12px;
-  font-weight: 700;
+.job-card__title {
+  margin: 0;
+  color: var(--brand-title);
+  font-size: 28px;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
 }
 
 .job-card__tags {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 18px;
 }
 
-.tag-item {
-  padding: 8px 12px;
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 12px;
   border-radius: 999px;
-  background: rgba(0, 166, 166, 0.08);
-  color: var(--brand-primary-deep);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tag-chip--salary {
+  background: #ecfdf5;
+  color: #15803d;
+}
+
+.tag-chip--skill {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.tag-chip--mode {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.job-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: var(--brand-ink-soft);
+  font-size: 14px;
+}
+
+.job-card__meta span + span::before {
+  content: "•";
+  margin-right: 12px;
+  color: #d1d5db;
 }
 
 @media (max-width: 760px) {
-  .job-card__head {
-    flex-direction: column;
+  .job-card {
+    padding: 20px;
   }
 
-  .job-card__salary {
-    font-size: 22px;
+  .job-card__title {
+    font-size: 24px;
   }
 }
 </style>

@@ -27,6 +27,18 @@ const routes: RouteRecordRaw[] = [
         meta: { requiredRole: 'candidate', title: '我的投递', section: 'candidate' }
       },
       {
+        path: 'applications/:applicationId',
+        name: 'candidate-application-detail',
+        component: () => import('@/views/candidate/ApplicationDetailView.vue'),
+        meta: { requiredRole: 'candidate', title: '投递详情', section: 'candidate', hiddenInMenu: true }
+      },
+      {
+        path: 'interviews',
+        name: 'candidate-interviews',
+        component: () => import('@/views/candidate/InterviewsView.vue'),
+        meta: { requiredRole: 'candidate', title: '面试邀请', section: 'candidate' }
+      },
+      {
         path: 'favorites',
         name: 'candidate-favorites',
         component: () => import('@/views/candidate/FavoritesView.vue'),
@@ -43,6 +55,12 @@ const routes: RouteRecordRaw[] = [
         name: 'candidate-profile',
         component: () => import('@/views/candidate/ProfileView.vue'),
         meta: { requiredRole: 'candidate', title: '个人设置', section: 'candidate' }
+      },
+      {
+        path: 'preferences',
+        name: 'candidate-preferences',
+        component: () => import('@/views/candidate/PreferencesView.vue'),
+        meta: { requiredRole: 'candidate', title: '求职偏好', section: 'candidate' }
       }
     ]
   }
