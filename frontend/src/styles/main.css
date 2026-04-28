@@ -1,20 +1,74 @@
+@import "tailwindcss";
+
+@theme {
+  --color-wellfound-red: #FF4D4D;
+  --font-wellfound: "Inter", "sans-serif";
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  33% { transform: translateY(-10px) rotate(1deg); }
+  66% { transform: translateY(5px) rotate(-1deg); }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes zoomIn {
+  from { transform: scale(1.15); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite;
+}
+
+.animate-slide-down {
+  opacity: 0;
+  animation: slideDown 2.5s cubic-bezier(0.16, 1, 0.3, 1) 1.2s forwards;
+}
+
+.animate-slide-up {
+  opacity: 0;
+  animation: slideUp 2.8s cubic-bezier(0.16, 1, 0.3, 1) 1.8s forwards;
+}
+
+.animate-zoom-in {
+  opacity: 0;
+  animation: zoomIn 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 :root {
-  --brand-primary: #1f6b57;
-  --brand-primary-deep: #184b40;
-  --brand-ink: #24303d;
-  --brand-ink-soft: rgba(36, 48, 61, 0.68);
-  --brand-title: #111827;
-  --brand-accent: #184b40;
-  --brand-line: rgba(17, 24, 39, 0.08);
-  --brand-card: rgba(255, 255, 255, 0.94);
-  --brand-card-strong: #ffffff;
-  --brand-surface: #f7f3eb;
-  --brand-shadow: 0 24px 60px rgba(17, 24, 39, 0.08);
-  --brand-radius: 24px;
-  --page-max-width: 1280px;
-  font-family: "Avenir Next", "PingFang SC", "Microsoft YaHei", sans-serif;
+  /* LinkedIn & Hired inspired palette */
+  --brand-primary: #0A66C2;
+  --brand-primary-deep: #004182;
+  --brand-primary-light: rgba(10, 102, 194, 0.08);
+  --brand-ink: #334155;
+  --brand-ink-soft: #64748B;
+  --brand-title: #0F172A;
+  --brand-accent: #004182;
+  --brand-line: #E2E8F0;
+  --brand-card: #FFFFFF;
+  --brand-card-strong: #FFFFFF;
+  --brand-surface: #F8FAFC;
+  --brand-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.08);
+  --brand-shadow-sm: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+  --brand-radius: 16px;
+  --brand-radius-lg: 24px;
+  --brand-radius-sm: 12px;
+  --page-max-width: 1200px;
+
+  font-family: "Inter", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
   color: var(--brand-ink);
-  background: linear-gradient(180deg, #f6f2ea 0%, #fbf8f2 100%);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
@@ -26,9 +80,9 @@ html {
 }
 
 body {
-  margin: 0;
-  min-width: 320px;
-  background: transparent;
+  background: #F3F2EF;
+  min-height: 100vh;
+  line-height: 1.6;
 }
 
 body,
@@ -36,7 +90,7 @@ button,
 input,
 textarea,
 select {
-  font-family: "Avenir Next", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: "Inter", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
 }
 
 a {
@@ -72,7 +126,7 @@ a {
   gap: 8px;
   padding: 8px 14px;
   border-radius: 999px;
-  background: rgba(31, 107, 87, 0.09);
+  background: var(--brand-primary-light);
   color: var(--brand-primary-deep);
   font-size: 13px;
   font-weight: 700;
@@ -82,18 +136,24 @@ a {
   color: var(--brand-ink-soft);
 }
 
+.el-button {
+  border-radius: 20px;
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .el-button--primary {
   background: var(--brand-primary);
   border-color: var(--brand-primary);
-  border-radius: 12px;
-  box-shadow: 0 10px 24px rgba(31, 107, 87, 0.18);
-  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(10, 102, 194, 0.2);
 }
 
 .el-button--primary:hover,
 .el-button--primary:focus {
   background: var(--brand-primary-deep);
   border-color: var(--brand-primary-deep);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(10, 102, 194, 0.3);
 }
 
 @media (max-width: 760px) {

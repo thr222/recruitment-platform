@@ -494,7 +494,7 @@ watch(
 .candidate-card:hover,
 .candidate-card--active {
   transform: translateY(-2px);
-  border-color: rgba(31, 107, 87, 0.16);
+  border-color: rgba(10, 102, 194, 0.16);
   box-shadow: 0 18px 34px rgba(20, 35, 45, 0.08);
 }
 

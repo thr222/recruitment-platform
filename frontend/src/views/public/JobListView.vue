@@ -350,7 +350,7 @@ onMounted(() => {
 
 .filter-tag:hover {
   color: var(--brand-primary);
-  background-color: rgba(31, 107, 87, 0.05);
+  background-color: rgba(10, 102, 194, 0.05);
 }
 
 .filter-tag.active {

@@ -254,7 +254,7 @@ function sendMessage() {
 
 .conversation-item:hover,
 .conversation-item.active {
-  border-color: rgba(31, 107, 87, 0.16);
+  border-color: rgba(10, 102, 194, 0.16);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
   transform: translateY(-2px);
 }
@@ -265,7 +265,7 @@ function sendMessage() {
   display: grid;
   place-items: center;
   border-radius: 16px;
-  background: rgba(31, 107, 87, 0.12);
+  background: rgba(10, 102, 194, 0.12);
   color: var(--brand-primary);
   font-weight: 800;
 }
@@ -329,12 +329,12 @@ function sendMessage() {
   max-width: min(620px, 92%);
   padding: 14px 16px;
   border-radius: 18px;
-  background: rgba(31, 107, 87, 0.07);
-  border: 1px solid rgba(31, 107, 87, 0.08);
+  background: rgba(10, 102, 194, 0.07);
+  border: 1px solid rgba(10, 102, 194, 0.08);
 }
 
 .message-item.me .message-bubble {
-  background: rgba(31, 107, 87, 0.12);
+  background: rgba(10, 102, 194, 0.12);
 }
 
 .message-meta {

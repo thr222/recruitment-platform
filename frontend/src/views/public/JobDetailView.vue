@@ -685,7 +685,7 @@ onMounted(() => {
 .timeline-card {
   padding: 12px 14px;
   border-radius: 16px;
-  background: rgba(31, 107, 87, 0.06);
+  background: rgba(10, 102, 194, 0.06);
 }
 
 .timeline-card strong {
@@ -787,7 +787,7 @@ onMounted(() => {
 .check-item {
   padding: 12px 14px;
   border-radius: 14px;
-  background: rgba(31, 107, 87, 0.06);
+  background: rgba(10, 102, 194, 0.06);
   color: var(--brand-title);
   line-height: 1.7;
 }

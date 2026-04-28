@@ -155,7 +155,7 @@ const tags = ['AI 招聘', 'SaaS', '企业服务', '扁平管理', '双休']
   display: grid;
   place-items: center;
   border-radius: 18px;
-  background: rgba(31, 107, 87, 0.12);
+  background: rgba(10, 102, 194, 0.12);
   color: var(--brand-primary);
   font-size: 24px;
   font-weight: 800;

@@ -6,10 +6,11 @@ const router = useRouter()
 const route = useRoute()
 
 const navItems = [
-  { label: 'Jobs', path: '/jobs' },
-  { label: 'Companies', path: '/companies' }
+  { label: '职位列表', path: '/jobs' },
+  { label: '热门企业', path: '/companies' }
 ]
 
+const isHomePage = computed(() => route.path === '/')
 const isLoginPage = computed(() => route.path === '/login')
 
 function goHome() {
@@ -35,13 +36,13 @@ function isActive(path: string) {
 
 <template>
   <div class="page-shell public-shell">
-    <header class="public-header">
+    <header v-if="!isHomePage" class="public-header">
       <div class="page-container header-inner">
         <button class="brand" type="button" @click="goHome">
           <span class="brand-mark">H</span>
           <span class="brand-copy">
             <strong>HireHub</strong>
-            <small>Smart hiring platform</small>
+            <small>智能招聘与求职平台</small>
           </span>
         </button>
 
@@ -66,7 +67,7 @@ function isActive(path: string) {
       </div>
     </header>
 
-    <main class="page-container public-main">
+    <main :class="['public-main', { 'page-container': !isHomePage, 'pt-0': isHomePage }]">
       <router-view />
     </main>
   </div>
@@ -221,7 +222,7 @@ function isActive(path: string) {
   border-radius: 999px;
   background: var(--brand-primary);
   color: #fff;
-  box-shadow: 0 12px 24px rgba(31, 107, 87, 0.18);
+  box-shadow: 0 12px 24px rgba(10, 102, 194, 0.18);
 }
 
 .auth-primary:hover {
@@ -230,7 +231,6 @@ function isActive(path: string) {
 }
 
 .public-main {
-  padding-top: 28px;
   padding-bottom: 48px;
 }
 

@@ -200,7 +200,7 @@ const accountSettings = [
   border-radius: 18px;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, rgba(31, 107, 87, 0.14), rgba(31, 107, 87, 0.04));
+  background: linear-gradient(135deg, rgba(10, 102, 194, 0.14), rgba(10, 102, 194, 0.04));
   color: var(--brand-primary-deep);
   font-size: 22px;
   font-weight: 800;
@@ -253,8 +253,8 @@ const accountSettings = [
   margin-top: 18px;
   padding: 16px;
   border-radius: 18px;
-  background: linear-gradient(180deg, rgba(31, 107, 87, 0.08), rgba(255, 255, 255, 0.96));
-  border: 1px solid rgba(31, 107, 87, 0.12);
+  background: linear-gradient(180deg, rgba(10, 102, 194, 0.08), rgba(255, 255, 255, 0.96));
+  border: 1px solid rgba(10, 102, 194, 0.12);
 }
 
 .security-card__title {

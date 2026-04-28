@@ -234,7 +234,7 @@ const activeMessage = computed(() => filteredMessages.value[0] ?? messages[0])
 .category-chip:hover,
 .category-chip.is-active {
   transform: translateY(-2px);
-  border-color: rgba(31, 107, 87, 0.24);
+  border-color: rgba(10, 102, 194, 0.24);
   box-shadow: 0 12px 24px rgba(17, 24, 39, 0.06);
 }
 
@@ -260,7 +260,7 @@ const activeMessage = computed(() => filteredMessages.value[0] ?? messages[0])
 }
 
 .message-card.is-unread {
-  background: linear-gradient(180deg, rgba(31, 107, 87, 0.06), rgba(255, 255, 255, 0.88));
+  background: linear-gradient(180deg, rgba(10, 102, 194, 0.06), rgba(255, 255, 255, 0.88));
 }
 
 .message-card__head {

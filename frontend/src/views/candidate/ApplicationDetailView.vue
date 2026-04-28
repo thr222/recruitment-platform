@@ -134,7 +134,7 @@ function withdrawApplication() {
   min-width: 260px;
   padding: 20px;
   border-radius: 20px;
-  background: rgba(31, 107, 87, 0.08);
+  background: rgba(10, 102, 194, 0.08);
 }
 
 .status-box span {

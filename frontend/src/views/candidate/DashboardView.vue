@@ -180,7 +180,7 @@ const insights = [
   gap: 20px;
   align-items: stretch;
   background:
-    radial-gradient(circle at top left, rgba(31, 107, 87, 0.14), transparent 42%),
+    radial-gradient(circle at top left, rgba(10, 102, 194, 0.14), transparent 42%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.92));
 }
 
@@ -212,8 +212,8 @@ const insights = [
 .hero-side {
   min-width: 280px;
   border-radius: 22px;
-  background: linear-gradient(160deg, rgba(31, 107, 87, 0.08), rgba(255, 255, 255, 0.92));
-  border: 1px solid rgba(31, 107, 87, 0.12);
+  background: linear-gradient(160deg, rgba(10, 102, 194, 0.08), rgba(255, 255, 255, 0.92));
+  border: 1px solid rgba(10, 102, 194, 0.12);
   padding: 22px;
   display: grid;
   align-content: space-between;
@@ -224,7 +224,7 @@ const insights = [
   width: fit-content;
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(31, 107, 87, 0.1);
+  background: rgba(10, 102, 194, 0.1);
   color: var(--brand-primary-deep);
   font-size: 13px;
   font-weight: 700;

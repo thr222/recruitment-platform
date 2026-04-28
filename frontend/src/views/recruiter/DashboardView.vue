@@ -74,8 +74,8 @@ const pipeline = computed<PipelineItem[]>(() => {
   const all = candidates.value.length ? candidates.value : []
   const picked = (status: string) => all.filter((item) => item.status === status).length
   return [
-    { label: '已投递', count: picked('已投递') || 126, color: '#1f6b57' },
-    { label: '已查看', count: picked('已查看') || 63, color: '#2f8f79' },
+    { label: '已投递', count: picked('已投递') || 126, color: '#0A66C2' },
+    { label: '已查看', count: picked('已查看') || 63, color: '#3B82F6' },
     { label: '初筛通过', count: picked('初筛通过') || 28, color: '#3b6cc9' },
     { label: '面试中', count: picked('面试中') || 12, color: '#e28b22' }
   ]
@@ -302,8 +302,8 @@ const statTrend = computed(() => {
 .hero-panel {
   border-radius: 22px;
   padding: 24px;
-  background: linear-gradient(180deg, rgba(31, 107, 87, 0.12), rgba(31, 107, 87, 0.04));
-  border: 1px solid rgba(31, 107, 87, 0.12);
+  background: linear-gradient(180deg, rgba(10, 102, 194, 0.12), rgba(10, 102, 194, 0.04));
+  border: 1px solid rgba(10, 102, 194, 0.12);
 }
 
 .hero-panel__title {
@@ -469,7 +469,7 @@ const statTrend = computed(() => {
 .tip-card {
   padding: 14px 16px;
   border-radius: 16px;
-  background: rgba(31, 107, 87, 0.06);
+  background: rgba(10, 102, 194, 0.06);
 }
 
 .tip-card strong {

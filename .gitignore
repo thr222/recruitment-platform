@@ -10,3 +10,4 @@ target/
 Thumbs.db
 *.iml
 uploads/
+.playwright-cli/

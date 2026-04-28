@@ -5,11 +5,25 @@ import { Search, ArrowRight } from '@element-plus/icons-vue'
 import { searchJobs } from '@/api/modules/job'
 import type { JobListItem } from '@/types/job'
 import JobCard from '@/components/business/JobCard.vue'
+import Hero from '@/components/wellfound/Hero.vue'
+import LogoLoop from '@/components/common/LogoLoop.vue'
 
 const router = useRouter()
 const searchQuery = ref('')
 const recommendedJobs = ref<JobListItem[]>([])
 const loading = ref(false)
+
+const partnerLogos = [
+  { node: 'NOTION', title: 'Notion' },
+  { node: 'IFTTT', title: 'IFTTT' },
+  { node: 'Postmates', title: 'Postmates' },
+  { node: 'PLAID', title: 'Plaid' },
+  { node: 'Airtable', title: 'Airtable' },
+  { node: 'Robinhood', title: 'Robinhood' },
+  { node: 'COINBASE', title: 'Coinbase' },
+  { node: 'STRIPE', title: 'Stripe' },
+  { node: 'FIGMA', title: 'Figma' }
+]
 
 // 模拟热门公司数据（后端暂无公共列表接口）
 const hotCompanies = ref([
@@ -68,124 +82,67 @@ onMounted(() => {
 
 <template>
   <div class="home-container">
-    <!-- Hero Section -->
-    <section class="hero-section">
-      <div class="content-wrapper">
-        <h1 class="hero-title">发现属于你的 <span class="highlight">理想职业</span></h1>
-        <p class="hero-subtitle">连接数万家名企，开启职业生涯新篇章</p>
+    <Hero />
+
+    <!-- Exact 1:1 Divider -->
+    <div class="w-full h-px bg-gray-200"></div>
+
+    <!-- 1:1 Subtitle & CTA Section (Directly after Hero) -->
+    <section class="py-24 bg-white text-center animate-zoom-in">
+      <div class="max-w-4xl mx-auto px-6 space-y-12">
+        <h2 class="text-3xl md:text-[40px] font-black text-black tracking-tight">
+          Where startups and job seekers connect
+        </h2>
         
-        <div class="search-box-container">
-          <el-input
-            v-model="searchQuery"
-            placeholder="搜索职位、公司、关键词..."
-            class="main-search-input"
-            @keyup.enter="handleSearch"
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-6 pt-4">
+          <router-link 
+            to="/login" 
+            class="w-full sm:w-auto px-10 py-4 bg-[#0a0a0a] text-white text-lg font-bold rounded-xl hover:bg-black transition-colors"
           >
-            <template #prefix>
-              <el-icon><Search /></el-icon>
-            </template>
-            <template #append>
-              <el-button type="primary" @click="handleSearch">搜索职位</el-button>
-            </template>
-          </el-input>
-          
-          <div class="hot-tags">
-            <span>热门搜索：</span>
-            <el-tag
-              v-for="tag in ['Java', '前端', '产品经理', '运营', '实习']"
-              :key="tag"
-              size="small"
-              effect="plain"
-              class="hot-tag"
-              @click="quickSearch(tag)"
-            >
-              {{ tag }}
-            </el-tag>
+            Find your next hire
+          </router-link>
+          <router-link 
+            to="/jobs" 
+            class="w-full sm:w-auto px-10 py-4 bg-white text-black text-lg font-bold rounded-xl border border-gray-200 hover:border-gray-300 transition-colors"
+          >
+            Find your next job
+          </router-link>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust & Stats Section -->
+    <section class="py-24 bg-[#2D1132] text-white overflow-hidden">
+      <div class="max-w-6xl mx-auto px-6">
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center mb-24">
+          <div class="space-y-2">
+            <div class="text-6xl md:text-7xl font-black tracking-tighter">800万+</div>
+            <div class="text-lg font-bold opacity-80 uppercase tracking-widest">成功匹配</div>
+          </div>
+          <div class="space-y-2">
+            <div class="text-6xl md:text-7xl font-black tracking-tighter">15万+</div>
+            <div class="text-lg font-bold opacity-80 uppercase tracking-widest">技术职位</div>
+          </div>
+          <div class="space-y-2">
+            <div class="text-6xl md:text-7xl font-black tracking-tighter">1000万+</div>
+            <div class="text-lg font-bold opacity-80 uppercase tracking-widest">入驻人才</div>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- Stats Section -->
-    <section class="stats-section">
-      <div class="content-wrapper">
-        <el-row :gutter="40">
-          <el-col v-for="stat in stats" :key="stat.label" :xs="24" :sm="8">
-            <div class="stat-card">
-              <div class="stat-value" :style="{ color: stat.color }">{{ stat.value }}</div>
-              <div class="stat-label">{{ stat.label }}</div>
-            </div>
-          </el-col>
-        </el-row>
-      </div>
-    </section>
-
-    <!-- Recommended Jobs -->
-    <section class="section recommended-jobs">
-      <div class="content-wrapper">
-        <div class="section-header">
-          <h2 class="section-title">推荐职位</h2>
-          <el-link type="primary" @click="router.push({ name: 'JobList' })">查看更多 <el-icon><ArrowRight /></el-icon></el-link>
-        </div>
-        
-        <el-skeleton :loading="loading" animated :count="4">
-          <template #template>
-            <div style="padding: 14px; margin-bottom: 20px; border: 1px solid #eee; border-radius: 8px">
-              <el-skeleton-item variant="p" style="width: 30%" />
-              <el-skeleton-item variant="text" style="margin-top: 10px" />
-              <el-skeleton-item variant="text" style="width: 60%" />
-            </div>
-          </template>
-          <template #default>
-            <div class="job-grid">
-              <JobCard v-for="job in recommendedJobs" :key="job.id" :job="job" />
-            </div>
-            <div v-if="recommendedJobs.length === 0 && !loading" class="empty-state">
-              <el-empty description="暂无推荐职位" />
-            </div>
-          </template>
-        </el-skeleton>
-      </div>
-    </section>
-
-    <!-- Hot Companies -->
-    <section class="section hot-companies">
-      <div class="content-wrapper">
-        <div class="section-header">
-          <h2 class="section-title">热门名企</h2>
-          <el-link type="primary" @click="router.push({ name: 'CompanyList' })">全部公司</el-link>
-        </div>
-        
-        <el-row :gutter="20">
-          <el-col v-for="company in hotCompanies" :key="company.id" :xs="24" :sm="12" :md="6">
-            <el-card class="company-card" shadow="hover" @click="router.push({ name: 'CompanyDetail', params: { id: company.id }})">
-              <div class="company-info">
-                <el-avatar :size="64" :src="company.logo" shape="square" class="company-logo" />
-                <h3 class="company-name">{{ company.name }}</h3>
-                <div class="company-tags">
-                  <span v-for="tag in company.tags" :key="tag" class="small-tag">{{ tag }}</span>
-                </div>
-                <div class="company-footer">
-                  <span class="job-count"><b>{{ company.jobCount }}</b> 个在招职位</span>
-                </div>
-              </div>
-            </el-card>
-          </el-col>
-        </el-row>
-      </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta-section">
-      <div class="content-wrapper">
-        <div class="cta-card">
-          <div class="cta-content">
-            <h2>准备好寻找你的下一份工作了吗？</h2>
-            <p>完善你的在线简历，让优秀的企业主动找到你。</p>
-          </div>
-          <div class="cta-actions">
-            <el-button type="primary" size="large" @click="router.push({ name: 'candidate-resume' })">完善简历</el-button>
-            <el-button size="large" @click="router.push({ name: 'JobList' })">浏览职位</el-button>
+        <!-- Logo Cloud with LogoLoop -->
+        <div class="space-y-12">
+          <LogoLoop
+            :logos="partnerLogos"
+            :speed="40"
+            direction="left"
+            :logoHeight="32"
+            :gap="80"
+            scaleOnHover
+            class="opacity-70 grayscale invert brightness-0 font-black tracking-tighter"
+          />
+          <div class="text-center text-sm font-bold opacity-50 tracking-widest uppercase">
+            已有数千家顶尖初创企业加入我们
           </div>
         </div>
       </div>
@@ -207,7 +164,7 @@ onMounted(() => {
 
 /* Hero Section */
 .hero-section {
-  background: linear-gradient(135deg, #1f6b57 0%, #f7f3eb 100%);
+  background: linear-gradient(135deg, #0A66C2 0%, #F8FAFC 100%);
   padding: 80px 0 100px;
   color: var(--brand-ink);
   text-align: center;
@@ -223,7 +180,7 @@ onMounted(() => {
 
 .hero-title .highlight {
   color: var(--brand-primary);
-  text-shadow: 0 0 20px rgba(31, 107, 87, 0.2);
+  text-shadow: 0 0 20px rgba(10, 102, 194, 0.2);
 }
 
 .hero-subtitle {

@@ -262,8 +262,8 @@ function resetFilters() {
   gap: 8px;
   padding: 18px 18px 16px;
   border-radius: 20px;
-  background: rgba(31, 107, 87, 0.06);
-  border: 1px solid rgba(31, 107, 87, 0.08);
+  background: rgba(10, 102, 194, 0.06);
+  border: 1px solid rgba(10, 102, 194, 0.08);
 }
 
 .hero-stat span {
@@ -334,7 +334,7 @@ function resetFilters() {
   width: 52px;
   height: 52px;
   border-radius: 16px;
-  background: rgba(31, 107, 87, 0.12);
+  background: rgba(10, 102, 194, 0.12);
   color: var(--brand-primary-deep);
   font-size: 18px;
   font-weight: 800;

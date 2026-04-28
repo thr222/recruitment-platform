@@ -325,8 +325,8 @@ function goJob(jobId: number) {
   gap: 8px;
   padding: 18px 18px 16px;
   border-radius: 20px;
-  background: rgba(31, 107, 87, 0.06);
-  border: 1px solid rgba(31, 107, 87, 0.08);
+  background: rgba(10, 102, 194, 0.06);
+  border: 1px solid rgba(10, 102, 194, 0.08);
 }
 
 .hero-stat span {

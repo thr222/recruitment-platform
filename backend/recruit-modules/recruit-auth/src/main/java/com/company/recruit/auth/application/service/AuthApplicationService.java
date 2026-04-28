@@ -106,12 +106,12 @@ public class AuthApplicationService {
 
     private AuthSubject mockSubject(String username) {
         if (username.startsWith("admin")) {
-            return new AuthSubject(10003L, username, List.of("ADMIN"), rolePermissions("ADMIN"), List.of());
+            return new AuthSubject(3L, username, List.of("ADMIN"), rolePermissions("ADMIN"), List.of());
         }
         if (username.startsWith("recruiter")) {
-            return new AuthSubject(10002L, username, List.of("RECRUITER"), rolePermissions("RECRUITER"), List.of(20001L));
+            return new AuthSubject(2L, username, List.of("RECRUITER"), rolePermissions("RECRUITER"), List.of(1L));
         }
-        return new AuthSubject(10001L, username, List.of("CANDIDATE"), rolePermissions("CANDIDATE"), List.of());
+        return new AuthSubject(1L, username, List.of("CANDIDATE"), rolePermissions("CANDIDATE"), List.of());
     }
 
     private List<String> rolePermissions(String role) {

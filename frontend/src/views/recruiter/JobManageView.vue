@@ -642,7 +642,7 @@ watch(
 .tip-item {
   padding: 14px;
   border-radius: 16px;
-  background: rgba(31, 107, 87, 0.06);
+  background: rgba(10, 102, 194, 0.06);
 }
 
 .tip-item strong {
